@@ -8,7 +8,7 @@ require_once 'Haversine.php';
 
 global $Session_ID;
 
-debug($_POST);
+//debug($_POST);
 
 $StartLat = $_POST['lat'];
 $StartLon = $_POST['lng'];
@@ -21,8 +21,8 @@ $SQL .= $_POST['gender'] ? " AND gender='".$_POST['gender']."'" : "";
 
 //echo $SQL;
 $Query = QueryDB($SQL);
-$RecordCount = CountRowsDB ($Query);
-echo "Result".$RecordCount;
+/*$RecordCount = CountRowsDB ($Query);
+echo "Result".$RecordCount;*/
 while ($Result = ReadFromDB($Query)){
 
 	// debug($Result);
@@ -194,54 +194,7 @@ $(window).scroll(function () {
 			?>
        
 				<article class="tg-doctor-profile">
-           <script type="text/javascript">          
-         
-          $(document).ready(function() {
-
-            var trs = $("#internalActivities<?=$i?> tr");
-            var btnMore = $("#show_more<?=$i?>");
-            var btnLess = $("#show_less<?=$i?>");
-            var trsLength = trs.length;
-            var currentIndex = 5;
-
-            trs.hide();
-            trs.slice(0, 5).show(); 
-            checkButton<?=$i?>(trsLength, btnMore, btnLess);
-
-            btnMore.click(function (e) { 
-                e.preventDefault();
-                $("#internalActivities<?=$i?> tr").slice(currentIndex, currentIndex + 5).show();
-                currentIndex += 5;
-                checkButton<?=$i?>(trsLength,btnMore, btnLess);
-            });
-
-            btnLess.click(function (e) { 
-                e.preventDefault();
-                $("#internalActivities<?=$i?> tr").slice(currentIndex - 5, currentIndex).hide();          
-                currentIndex -= 5;
-                checkButton<?=$i?>(trsLength, btnMore, btnLess);
-            });
-
-          });
-
-          function checkButton<?=$i?>(trsLength, btnMore, btnLess) {
-
-              var currentLength = $("#internalActivities<?=$i?> tr:visible").length;
-              
-              if (currentLength >= trsLength) {
-                  btnMore.hide();            
-              } else {
-                  btnMore.show();   
-              }
-              
-              if (trsLength > 5 && currentLength > 5) {
-                  btnLess.show();
-              } else {
-                  btnLess.hide();
-              }
-              
-          }
-        </script>
+          
 						<div class="tg-box">
 						<?php if($profileDetails['profilepic']){?>
 							<figure class="tg-docprofile-img"><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$profile_id?>"><img src="<?=IMAGE_URL.$profileDetails['profilepic']?>" alt="<?php echo $profileDetails['first_name'].' '.$profileDetails['last_name']; ?>"></a></figure>
@@ -274,6 +227,54 @@ $(window).scroll(function () {
                 //echo $startdate.":".$days[0];
                 ?>
                 <div id="data<?=$i?>">
+                 <script type="text/javascript">          
+                 
+                  $(document).ready(function() {
+
+                    var trs = $("#internalActivities<?=$i?> tr");
+                    var btnMore = $("#show_more<?=$i?>");
+                    var btnLess = $("#show_less<?=$i?>");
+                    var trsLength = trs.length;
+                    var currentIndex = 5;
+
+                    trs.hide();
+                    trs.slice(0, 5).show(); 
+                    checkButton<?=$i?>(trsLength, btnMore, btnLess);
+
+                    btnMore.click(function (e) { 
+                        e.preventDefault();
+                        $("#internalActivities<?=$i?> tr").slice(currentIndex, currentIndex + 5).show();
+                        currentIndex += 5;
+                        checkButton<?=$i?>(trsLength,btnMore, btnLess);
+                    });
+
+                    btnLess.click(function (e) { 
+                        e.preventDefault();
+                        $("#internalActivities<?=$i?> tr").slice(currentIndex - 5, currentIndex).hide();          
+                        currentIndex -= 5;
+                        checkButton<?=$i?>(trsLength, btnMore, btnLess);
+                    });
+
+                  });
+
+                  function checkButton<?=$i?>(trsLength, btnMore, btnLess) {
+
+                      var currentLength = $("#internalActivities<?=$i?> tr:visible").length;
+                      
+                      if (currentLength >= trsLength) {
+                          btnMore.hide();            
+                      } else {
+                          btnMore.show();   
+                      }
+                      
+                      if (trsLength > 5 && currentLength > 5) {
+                          btnLess.show();
+                      } else {
+                          btnLess.hide();
+                      }
+                      
+                  }
+                </script>
                   <input type="hidden" name="nextdate" id="nextdate_<?=$i?>" value="<?=$nextdate?>"> 
                   <input type="hidden" name="startdate" id="startdate_<?=$i?>" value="<?=$startdate?>"> 
                   <input type="hidden" name="profile_id" id="profile_id_<?=$i?>" value="<?=$profile_id?>"> 
@@ -442,7 +443,7 @@ function getMarkers(){
         var speciality = markers[i].getAttribute("speciality");
         var type = "orange";
         var point = new google.maps.LatLng(parseFloat(markers[i].getAttribute("lat")), parseFloat(markers[i].getAttribute("lng")));
-        var html = "<strong>" + name +  "(" + speciality + ") </strong><br />Address:" + address + "<br /> <a style='position: static;' href='/booking/&profile_id="+profile_id+"'>Book Now</a></div>";
+        var html = "<strong>" + name +  "(" + speciality + ") </strong><br />Address:" + address + "<br /> <a style='position: static;' href='/doctor/doctor-details.html?doctor_profile_id="+profile_id+"'>View Doctor Details</a></div>";
         var icon = customIcons[type] || {};
         var marker = new google.maps.Marker({
             map: map,
