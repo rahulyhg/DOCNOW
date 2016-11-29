@@ -1,0 +1,111 @@
+<?php
+	$formAction = $IncludePath ? ThisURL . ROOT_URL . "/CPPM.php" : ROOT_URL . "/CPPM.php";
+
+	global $UserStatus, $Filename;
+	global $Session_ID, $Error_NUM, $From, $Dest_URL;
+?>
+
+<?php if (($Error_NUM) && ($From == 'signup')) :?>
+		<?php include_once ("modules/db-functions.php");?>
+		<div class="alert alert-danger">
+			<a class="close" data-dismiss="alert" href="#">×</a>
+			<?=RetrieveError ($Error_NUM, $Session_ID); ?>
+		</div>
+<?php endif; ?>
+
+<form id='signup-form' class="tg-form-modal tg-form-signup" action="<?=$formAction?>" method="post">
+<?php
+	if ($IncludePath) {
+		echo RetrieveHiddenField ("Src_URL", "");
+		echo RetrieveHiddenField ("Dest_URL", ($Dest_URL ? $Dest_URL : PEM));
+	} else {
+		echo RetrieveHiddenField ("Src_URL",  ($Filename ? ROOT_URL."/".$Filename : HOME)."?From=signup");
+		echo RetrieveHiddenField ("Dest_URL", ($Dest_URL ? $Dest_URL : PEM));
+	}
+	PrintHiddenField ("Session_ID", $Session_ID);
+?>	
+	<fieldset>
+		<div class="form-group">
+			<span class="select">
+				<select>
+					<option>Doctor one</option>
+					<option>Doctor two</option>
+					<option>Doctor three</option>
+				</select>
+			</span>
+		</div>
+		<div class="form-group">
+			<span class="select">
+				<select>
+					<option>Specialty*</option>
+					<option>Specialty two</option>
+					<option>Specialty three</option>
+				</select>
+			</span>
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control" placeholder="First Name">
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control" placeholder="last Name">
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control" placeholder="Phone Number">
+		</div>
+		<div class="form-group">
+			<input type="email" class="form-control" placeholder="Email" name="Eml">
+		</div>
+		<div class="form-group">
+			<input type="password" class="form-control" placeholder="Password" name="Pwd">
+		</div>
+		<div class="form-group">
+			<input type="password" class="form-control" placeholder="Confirm password" name="Pwd2">
+		</div>
+		<div class="form-group">
+			<input type="text" class="form-control" placeholder="ZIP Code">
+		</div>
+		<div class="form-group tg-checkbox">
+			<label>
+				<input type="checkbox" class="form-control">
+				I agree with the terms and conditions
+			</label>
+		</div>
+		<button type="submit" class="tg-btn tg-btn-lg">Create an Account</button>
+	</fieldset>
+</form>
+
+<script>
+	$(function() {
+		'use strict';
+		var 
+			signupForm  = $('#signup-form');
+
+		signupForm.on('submit',function (e) {
+			e.preventDefault();
+			e.stopImmediatePropagation();
+
+			var $this = $(this);
+
+			$.ajax({
+				type: 'post',
+				url: $this.attr('action'),
+				data: $this.serialize(),
+				contentType : false,
+				processData : false
+			}).done(function (response) {
+				console.log('done');
+				console.log(response);
+			}).fail(function(response) {
+				console.log('fail');
+				console.log(response);
+				var $response = $(response);
+				console.log($response);
+					/*formModal
+						.find('#tg-signup-formarea').html($response).end()
+						.trigger('load.modal');
+					return;*/
+			});
+		});
+
+	});
+</script>
