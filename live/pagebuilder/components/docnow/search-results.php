@@ -14,10 +14,28 @@ $StartLat = $_POST['lat'];
 $StartLon = $_POST['lng'];
 $Distance = "";
 
-	
-$SQL = "SELECT profile_id, lat, lng FROM `tUsers` WHERE doctor=1";
-$SQL .= $_POST['speciality'] ? " AND speciality_id=".$_POST['speciality'] : "";
-$SQL .= $_POST['gender'] ? " AND gender='".$_POST['gender']."'" : "";
+if($_POST['rate']){
+
+  $SQL = "SELECT tUsers.profile_id, tUsers.lat, tUsers.lng, ROUND(SUM(tDocReview.star)/COUNT(tDocReview.star)) AS 'average_rating' 
+    FROM `tUsers`
+    LEFT JOIN tAppointments ON tAppointments.doctor_profile_id=tUsers.profile_id 
+    LEFT JOIN tDocReview ON tDocReview.appointment_id=tAppointments.id 
+    WHERE tUsers.doctor=1";
+
+  $SQL .= $_POST['speciality'] ? " AND speciality_id=".$_POST['speciality'] : "";
+  $SQL .= $_POST['gender'] ? " AND gender='".$_POST['gender']."'" : "";
+  $SQL .= $_POST['language'] ? " AND language LIKE '%".$_POST['language']."%'" : "";
+  $SQL .= " GROUP BY tAppointments.doctor_profile_id 
+  HAVING(average_rating ".($_POST['rate'] == 'greater than 5' ? '> 5' : '='.$_POST['rate']).")";
+
+}else{
+
+  $SQL = "SELECT profile_id, lat, lng FROM `tUsers` WHERE doctor=1";
+  $SQL .= $_POST['speciality'] ? " AND speciality_id=".$_POST['speciality'] : "";
+  $SQL .= $_POST['gender'] ? " AND gender='".$_POST['gender']."'" : "";
+  $SQL .= $_POST['language'] ? " AND language LIKE '%".$_POST['language']."%'" : "";
+
+}
 
 //echo $SQL;
 $Query = QueryDB($SQL);
@@ -177,11 +195,14 @@ $(window).scroll(function () {
 
 <div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
 	<div class="tg-doctors-list tg-haslayout">
-		<div class="tg-view tg-grid-view">
-			<div class="row">
+		<div class="tg-view tg-grid-view" style="padding-top: 0px;">
+			<div class="row" style="padding-top: 0px;">
 			<?php 
 			$i = 1;
-
+      $sessionParams = '';
+      if (isset($_GET['Session_ID']) && !empty($_GET['Session_ID'])) {
+        $sessionParams .= '&Session_ID=' . $_GET['Session_ID'];
+      }
 			foreach ($profiles as $profile_id):
 
 				$profileDetails = getProflieRegDetails($profile_id);
@@ -193,16 +214,16 @@ $(window).scroll(function () {
       //echo "test".$i;
 			?>
        
-				<article class="tg-doctor-profile">
+				<article class="tg-doctor-profile" style="padding-top: 0px;">
           
 						<div class="tg-box">
 						<?php if($profileDetails['profilepic']){?>
-							<figure class="tg-docprofile-img"><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$profile_id?>"><img src="<?=IMAGE_URL.$profileDetails['profilepic']?>" alt="<?php echo $profileDetails['first_name'].' '.$profileDetails['last_name']; ?>"></a></figure>
+							<figure class="tg-docprofile-img"><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$profile_id . $sessionParams?>"><img src="<?=IMAGE_URL.$profileDetails['profilepic']?>" alt="<?php echo $profileDetails['first_name'].' '.$profileDetails['last_name']; ?>"></a></figure>
 						<?}?>
 								<span class="tg-featuredicon"><em class="fa fa-bolt"></em></span>
 							<div class="tg-docprofile-content">
 								<div class="tg-heading-border tg-small">
-									<h3><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$profile_id?>">Dr. <?php echo $doctorName; ?>  </a></h3> <br><?php echo getSpecialityName($profileDetails['speciality_id']); ?>
+									<h3><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$profile_id . $sessionParams?>">Dr. <?php echo $doctorName; ?>  </a></h3> <br><?php echo getSpecialityName($profileDetails['speciality_id']); ?>
 								</div>                          
 								<div class="tg-description"> 
 									<p class="ellipsis"><?=$profileDetails['address']?></p>
@@ -637,17 +658,17 @@ $(document).ready(function() {
                   <li>
                     <figure>
                     <?php if ($featuredDoctor['profilepic']) :?>
-                      <a href="/doctor/doctor-details.html?doctor_profile_id=<?=$featuredocProfileId?>">
+                      <a href="/doctor/doctor-details.html?doctor_profile_id=<?=$featuredocProfileId . $sessionParams?>">
                         <img src="<?=IMAGE_URL.$featuredDoctor['profilepic']?>" style="height:63px; width:63px !important;">
                       </a>
                     <?php else: ?>
-                      <a href="/doctor/doctor-details.html?doctor_profile_id=<?=$featuredocProfileId?>">
+                      <a href="/doctor/doctor-details.html?doctor_profile_id=<?=$featuredocProfileId . $sessionParams?>">
                         <img src="/live/images/blog/img-12.jpg" alt="image description">
                       </a>
                     <?php endif; ?>
                     </figure>
                     <div class="tg-description">
-                      <h3><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$featuredocProfileId?>">Dr. <?=$featuredDoctor['first_name'] . ' ' . $featuredDoctor['last_name']?></a></h3>
+                      <h3><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$featuredocProfileId . $sessionParams?>">Dr. <?=$featuredDoctor['first_name'] . ' ' . $featuredDoctor['last_name']?></a></h3>
                       <?php
                         $reviewsStarAverage = getReviewsStarAverage($featuredocProfileId);
 
