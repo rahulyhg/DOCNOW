@@ -132,7 +132,7 @@ if($_POST['speciality']){
 
 $(function () {
     $("article").slice(0, 4).show();
-    console.log($("article").slice(0, 4).show())
+    //console.log($("article").slice(0, 4).show())
     $("#loadMore").on('click', function (e) {
         e.preventDefault();
         $("article:hidden").slice(0, 4).slideDown();
@@ -214,7 +214,7 @@ $(window).scroll(function () {
       //echo "test".$i;
 			?>
        
-				<article class="tg-doctor-profile" style="padding-top: 0px;">
+				<article class="tg-doctor-profile" <? echo ($i <= 2 ? 'style="padding-top: 0px;"' : ''); ?> >
           
 						<div class="tg-box">
 						<?php if($profileDetails['profilepic']){?>
