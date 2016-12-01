@@ -4,4 +4,4 @@
 	$data = $_POST;
 	$sent = saveNotification($data);
 
-	return json_encode($sent);
+	echo $sent;

@@ -57,12 +57,12 @@
 		</tr>
 	</table>
 
-		<div class="radio">
+		<!-- <div class="radio">
 		  <label>
 		    <input type="radio" name="confirmation" class="confirmation-radio" value="confirmed" checked>
 		    Confirmed
 		  </label>
-		</div>
+		</div> -->
 		<div class="radio">
 		  <label>
 		    <input type="radio" name="confirmation" class="confirmation-radio" value="reschedule">

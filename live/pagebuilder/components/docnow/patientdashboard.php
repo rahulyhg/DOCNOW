@@ -1,6 +1,7 @@
 <?php
 
 include_once 'modules/fusion.php';
+include_once 'flash_message.php';
 
 include_once 'custom_modules/common.php';
 

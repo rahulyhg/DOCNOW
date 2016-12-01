@@ -49,7 +49,7 @@ $(document).ready(function() {
 		</div>
 		
 		<div class="col-md-3">
-			<a href="settings-doctor.html" class="tg-btn" style="width: 100%;">Notifications</a>
+			<a href="/doctors/notifications.html?Session_ID=<?=$Session_ID?>" class="tg-btn" style="width: 100%;">Notifications</a>
 		</div>
 		
 		<div class="col-md-3">
@@ -70,6 +70,8 @@ $(document).ready(function() {
 			 //$doctorProfileId = $pastAppointment['profile_id']; 
 			//debug($pastAppointment);
 				$reviews = getReviews($pastAppointment['appointment_id']);
+
+			//debug($reviews);
 			?>
 
 		<div class="row">
@@ -81,7 +83,7 @@ $(document).ready(function() {
 								<div class="tg-docinfo tg-haslayout">
 									<div class="tg-box">
 										<div class="tg-heading-border tg-small">
-											<h3><?=$pastAppointment['first_name'] .' '. $pastAppointment['last_name'] ?></h3>
+											<h3><?=$pastAppointment['first_name'] .' '. $pastAppointment['last_name'] ?></h3> <?=date('d F Y H:i:s', strtotime($pastAppointment['start_date'])).' - '.date('H:i:s', strtotime($pastAppointment['end_date']))?>
 										</div>
 										<div class="tg-description">
 										<? if($reviews['comment'] != ''){?>
@@ -116,8 +118,7 @@ $(document).ready(function() {
 									
 										<?php
 										}
-										?>
-										
+										?>									
 										
 										<!-- <i class="fa fa-star-o"></i> -->
 									</div>
@@ -139,9 +140,9 @@ $(document).ready(function() {
 								<img src="<?=IMAGE_URL.$pastAppointment['profilepic']?>" style="height:270px; width:270px !important;">
 							</a>
 						<?php else: ?>
-							<a href="#">
-								<img src="/live/images/dashboard/img-01.jpg" alt="image description">
-							</a>
+							
+								<img src="/live/images/patient-icon.png" alt="image description">
+							
 						<?php endif; ?>
 						</figure>
 					</div>

@@ -1,17 +1,10 @@
 <style>
-
 	body.modal-open div.modal-backdrop { 
 	    z-index: 0; 
 	}
-
-	/*.modal-backdrop {
-	  z-index: -1;
-	}*/
-
 </style>
 <?php	
-/*error_reporting(E_ALL);
-ini_set('display_errors', 1);*/
+
 	require_once ('modules/profile.php');
 	include_once 'modules/connect.php';
 	include_once 'custom_modules/common.php';
@@ -132,7 +125,11 @@ ini_set('display_errors', 1);*/
     display: block;
   }
 </style>
+<span class="session-write-script hidden"><?='/live/session_write.php'?></span>
 <div class="container">
+<?php 
+include_once 'flash_message.php';
+?>
 	<div class="row">
 		<div class="col-lg-9 col-md-8 col-sm-8 col-xs-12">
 			<div class="tg-doctor-detail tg-doctor-detail2 tg-haslayout">
@@ -172,7 +169,7 @@ ini_set('display_errors', 1);*/
 								<!-- <a href="/booking/&Session_ID=<?=$Session_ID?>&profile_id=<?=$profileDetails['profile_id']?>" class="pull-right btn-success btn-lg" id="book">Book Dr <?=$profileDetails['first_name']." ".$profileDetails['last_name'];?></a> -->
 								<?php if($userHasActiveAppointment) :?>
 									<?php $fullName = $profileDetails['first_name'] . " " . $profileDetails['last_name']; ?>
-									<button type="button" class="btn btn-primary btn-lg"  id="load-notification-modal" data-profile-id="<?=$profileDetails['profile_id']?>" data-doctor-name="<?=$fullName?>">
+									<button type="button" class="btn btn-primary btn-lg"  id="load-notification-modal" data-doctor-profile-id="<?=$profileDetails['profile_id']?>" data-patient-profile-id="<?=$Profile_ID?>" data-doctor-name="<?=$fullName?>">
 									  Send message to DR. <?=$profileDetails['first_name'] . " " . $profileDetails['last_name'];?>
 									</button>
 								<?php endif; ?>
@@ -397,12 +394,6 @@ ini_set('display_errors', 1);*/
 	</div>
 </div>
 
-<!-- <div class="modal fade" id="notify-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content" id="notify-modal-content">
-    </div>
-  </div>
-</div> -->
 
 <div class="modal fade" id="notify-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
   <div class="modal-dialog" role="document">
@@ -411,28 +402,74 @@ ini_set('display_errors', 1);*/
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel"></h4>
       </div>
-      <div class="modal-body">
-      	<form class="notifiy-doctor-form" action="">
-        	<textarea class="form-control" rows="4"></textarea>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-success">Send message</button>
-      </div>
+      <form class="notifiy-doctor-form" action="/live/notify_doctor.php" method="post">
+	      <div class="modal-body">
+	      	<div class="alert alert-danger notify-error-div hidden">
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<span class="notify-error-span"></span>
+			</div>
+	      		<label class="control-label" for="message">Type your message in the area below:</label>
+	        	<textarea class="form-control" id="message" name="message" rows="4"></textarea>
+	        	<input type="hidden" name="patient_profile_id" value="<?=$Profile_ID?>">
+	        	<input type="hidden" name="doctor_profile_id" value="<?=$profileDetails['profile_id']?>">
+	        	<input type="hidden" name="sender" value="patient">
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="submit" id="submit-notification-btn" class="btn btn-success">Send message</button>
+	      </div>
+      </form>
     </div>
   </div>
 </div>
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		var
+			sessionWriteScript = $('.session-write-script').html(),
+			notifyForm = $('.notifiy-doctor-form'),
+			flashErrDiv = $('.notify-error-div'),
+			flashErrSpan = $('.notify-error-span');
+
 		$('#load-notification-modal').on('click', function() {
 			var $this = $(this);
-				doctorName = $this.data('doctorName'),
-				doctorProfileId = $this.data('profileId');
+				doctorName = $this.data('doctorName');
 
 			$('#notify-modal').modal('show', {backdrop: 'static', keyboard: false});
-			$('.modal-title').html('Send message to Dr. ' + doctorName);
+			$('.modal-title').html('Message to Dr. ' + doctorName);
+
+			notifyForm.on('submit',function (e) {
+				e.preventDefault();
+				e.stopImmediatePropagation();
+
+				var thisForm = $(this);
+				$.ajax({
+					type: 'post',
+					url: thisForm.attr('action'),
+					data: new FormData(thisForm[0]),
+					contentType : false,
+					processData : false
+				}).done(function (response) {
+					console.log(response);
+					if (response) {
+						$.ajax({
+							type: 'post',
+							url: sessionWriteScript,
+							data: {
+								sessionMessage: "Your message has been sent successfully.",
+						 		sessionMessageClass: "alert-success"
+						 	}
+						}).done(function (response) {
+							$('#notify-modal').modal('hide');
+							window.location.reload();
+						});
+					} else {
+						flashErrDiv.removeClass('hidden');
+						flashErrSpan.html('An error occured while sending your message. Please try again.');
+					}
+				});
+
+			});
 		});
 	});
 </script>

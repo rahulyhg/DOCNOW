@@ -220,13 +220,20 @@ function sendDoctorBookingEmail($data) {
     $fullDoctorName = $doctorDetails['first_name'] . ' ' . $doctorDetails['last_name'];
     $emailTo = $doctorDetails['email'];
 
+    $paymentMethodArray = array('cd' => 'Card Payment', 'cs' => 'Cash', 'ma' => 'Medical Aid');
+
+    $paymentMethod = $data['payment_method'];
+    $here = '<a href="'.ThisURL.'">here</a>';
+
+    $htmlMessage = str_replace("**paymentMethod**", $paymentMethodArray[$paymentMethod], $htmlMessage);
     $htmlMessage = str_replace("**doctorName**", $fullDoctorName, $htmlMessage);
     $htmlMessage = str_replace("**patientName**", $fullname, $htmlMessage);
     $htmlMessage = str_replace("**BookingDate**", $bookingDate, $htmlMessage);
     $htmlMessage = str_replace("**patientEmail**", $patientEmail, $htmlMessage);
     $htmlMessage = str_replace("**patientCellphone**", $patientCellphone, $htmlMessage);
+    $htmlMessage = str_replace("**here**", $here, $htmlMessage);
 
-    SendMultipartMIMEMail ($emailTo, $emailFrom, $ccTo, $replyTo, $subject, $textMessage, $htmlMessage, $priority);
+    SendMultipartMIMEMail ($emailTo, $$nameFrom.' <'.$emailFrom.'>', $ccTo, $replyTo, $subject, $textMessage, $htmlMessage, $priority);
 
 }
 
@@ -293,7 +300,7 @@ function getDoctorPastAppointments($profileId) {
 		FROM tAppointments
 		WHERE tAppointments.doctor_profile_id = "' . $profileId . '"
 		AND tAppointments.end_date < Now() 
-		ORDER BY tAppointments.end_date LIMIT 4';
+		ORDER BY DATE(tAppointments.start_date) LIMIT 4';
 
 	$Query = QueryDB($SQL);
 	$pastAppointments = array();
@@ -384,24 +391,26 @@ function sendPatienBookingConfirmation($data) {
     $htmlMessage = str_replace("*||doctorAddress||*", $doctorAddress, $htmlMessage);
     $htmlMessage = str_replace("*||doctorSpeciality||*", $doctorSpeciality, $htmlMessage);
 
-    SendMultipartMIMEMail ($patientEmail, $emailFrom, $ccTo, $replyTo, $subject, $textMessage, $htmlMessage, $priority);
+    SendMultipartMIMEMail ($patientEmail, $nameFrom.' <'.$emailFrom.'>', $ccTo, $replyTo, $subject, $textMessage, $htmlMessage, $priority);
 
 }
 
 function getPatientAppointmentById($appointmentId) {
-	$SQL = "SELECT tUsers.address, 
-					CONCAT(tUsers.first_name, \"' \"', tUsers.last_name) as doctorName, 
-					CONCAT(tAppointments.first_name, \"' \"', tAppointments.last_name) as patientName, 
-					tAppointments.start_date, 
-					tAppointments.end_date, 
-					tPayment_Methods.name as paymentMethod, 
-					tAppointments.cell_phone, 
-					tAppointments.email
-			FROM tAppointments
-			LEFT JOIN tUsers on tUsers.profile_id = tAppointments.doctor_profile_id
-			LEFT JOIN tPayment_Methods ON tPayment_Methods.id = tAppointments.payment_method
-			WHERE tAppointments.id = {$appointmentId}";
 
+	$SQL = "SELECT tUsers.address AS doctorAddress, 
+		CONCAT(tUsers.first_name, ' ', tUsers.last_name) as doctorName, 
+		CONCAT(tAppointments.first_name, ' ', tAppointments.last_name) as patientName, 
+		tAppointments.start_date, tAppointments.end_date, 
+		tPayment_Methods.name as paymentMethod, 
+		tAppointments.cell_phone, 
+		tAppointments.email, 
+		tSpecialty.specialty_name AS `doctorSpeciality` 
+		FROM tAppointments 
+		LEFT JOIN tUsers on tUsers.profile_id = tAppointments.doctor_profile_id 
+		LEFT JOIN tPayment_Methods ON tPayment_Methods.id = tAppointments.payment_method 
+		LEFT JOIN tSpecialty ON tSpecialty.id = tUsers.speciality_id 
+	WHERE tAppointments.id = {$appointmentId}";
+			
 	$Query = QueryDB($SQL);
 	return ReadFromDB($Query);	
 }
@@ -499,4 +508,58 @@ function checkActiveAppointment($doctorProfileId, $patientProfileId) {
 
 	return !empty($Result);
 }
+
+function saveNotification($data) {
+	$doctorProfileId = $data['doctor_profile_id'];
+	$patientProfileId = $data['patient_profile_id'];
+	$message = addslashes($data['message']);
+	$created = date('Y-m-d H:i:s');
+	$sender = $data['sender'];
+
+	$sql = 'INSERT INTO tNotifications (doctor_profile_id, patient_profile_id, message, sender, created) VALUES ("' . $doctorProfileId . '", "' . $patientProfileId . '", "' . $message . '", "' . $sender . '", "' . $created . '");';
+	$notificationId = InsertDB($sql, 'id');
+
+	if (!empty($notificationId)) {
+		sendEmailNotification($data);
+		return true;
+	} else {
+		return false;
+	}
+
+}
+
+function sendEmailNotification($data) {
+    $mailId = 7;
+    $welcomeMessageDetails = RetrieveMessage($mailId);
+    $nameFrom = $welcomeMessageDetails['From_STRING'];
+    $emailFrom = $welcomeMessageDetails['FromEmail_STRING'];
+    $ccTo = $welcomeMessageDetails['CCTo_STRING'];
+    $replyTo = $welcomeMessageDetails['ReplyTo_STRING'];
+    $subject = stripslashes($welcomeMessageDetails['MailSubject_STRING']);
+    $textMessage = stripslashes($welcomeMessageDetails['MailText_STRING']);
+    $htmlMessage = stripslashes($welcomeMessageDetails['MailHTML_STRING']);
+    $priority = $welcomeMessageDetails['Priority_NUM'];
+
+    $patientDetails = getProflieRegDetails($data['patient_profile_id']);
+    $fullPatientName = $patientDetails['first_name'] . ' ' . $patientDetails['last_name'];
+    $patientEmail = $patientDetails['email'];
+    $patientCellphone = $patientDetails['cell_phone'];
+
+    $doctorDetails = getProflieRegDetails($data['doctor_profile_id']);
+    $fullDoctorName = 'DR. ' . $doctorDetails['first_name'] . ' ' . $doctorDetails['last_name'];
+
+    $emailTo = ($data['sender'] == 'patient') ? $doctorDetails['email'] : $patientEmail;
+    $userName = ($data['sender'] == 'patient') ? $fullDoctorName : $fullPatientName;
+    $sender = ($data['sender'] == 'patient') ? $fullPatientName : $fullDoctorName ;
+
+    $htmlMessage = str_replace("*|username|*", $userName, $htmlMessage);
+    $htmlMessage = str_replace("*|message|*", $data['message'], $htmlMessage);
+    $htmlMessage = str_replace("*|created|*", $data['created'], $htmlMessage);
+    $htmlMessage = str_replace("*|sender|*", $sender, $htmlMessage);
+
+
+    SendMultipartMIMEMail ($emailTo, $nameFrom.' <'.$emailFrom.'>', $ccTo, $replyTo, $subject, $textMessage, $htmlMessage, $priority);
+
+}
+
 ?>

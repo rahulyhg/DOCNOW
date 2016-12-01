@@ -22,7 +22,7 @@
 				<h2>Booking Confirmation</h2>
 				<span class="tg-roundbox"></span>
 				<div class="tg-description">
-					<p>Please ensure tat the details captured below are correct.</p>
+					<p>Please ensure that the details captured below are correct.</p>
 				</div>
 			</div>
 		</div>

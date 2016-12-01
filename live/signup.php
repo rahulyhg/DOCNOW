@@ -15,8 +15,8 @@ if (!empty($_POST)) {
 }
 
 function signup($data) {
-    $registrationURL = ROOT_URL . "/CPPM.php";
-    $data['Src_URL'] = ($Filename ? ROOT_URL . '/' . $Filename : HOME) . '?From=signup';
+    $registrationURL = ThisURL . ROOT_URL . "/CPPM.php";
+    $data['Src_URL'] = ($Filename ? ThisURL . ROOT_URL . '/' . $Filename : HOME) . '?From=signup';
     $data['APIKey'] = 'f0e8212b6bda3ced017c4659bd6ea90b';
     $data['Format'] = 'json';
     $response = httpPost($registrationURL, $data);

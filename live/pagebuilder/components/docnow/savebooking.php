@@ -11,9 +11,11 @@
 	if (!isset($_POST['confirm-booking']) || empty($_POST)) {
 		redirectToPage(ThisURL . '?Session_ID=' . $Session_ID, 'Cannot find booking data.', 'alert-danger');
 	}	
-
-	if (saveBooking($_POST)) {
+	$appointmentId=saveBooking($_POST);
+	if ($appointmentId) {
 		sendDoctorBookingEmail($_POST);
+		$appointmentDetails = getPatientAppointmentById($appointmentId);
+		sendPatienBookingConfirmation($appointmentDetails);
 		redirectToPage(ThisURL . '?Session_ID=' . $Session_ID, 'Booking saved successfully.', 'alert-success');
 	} else {
 		redirectToPage(ThisURL . '?Session_ID=' . $Session_ID, 'Cannot save booking data.', 'alert-danger');

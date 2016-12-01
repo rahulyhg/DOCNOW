@@ -5,6 +5,7 @@ ini_set('display_errors', 1);*/
 
 include_once 'custom_modules/common.php';
 include_once 'modules/globals.php';
+include_once 'flash_message.php';
 
 global $Profile_ID, $Session_ID;
 

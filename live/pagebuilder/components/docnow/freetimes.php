@@ -67,10 +67,58 @@ $bookedDates = getDoctorAppointmentsdates($profile_id, $startdate, $enddate);
 
 //echo $startdate.":".$days[0];
 ?>
+ <script type="text/javascript">          
+         
+  $(document).ready(function() {
+
+    var trs = $("#internalActivities<?=$i?> tr");
+    var btnMore = $("#show_more<?=$i?>");
+    var btnLess = $("#show_less<?=$i?>");
+    var trsLength = trs.length;
+    var currentIndex = 5;
+
+    trs.hide();
+    trs.slice(0, 5).show(); 
+    checkButton<?=$i?>(trsLength, btnMore, btnLess);
+
+    btnMore.click(function (e) { 
+        e.preventDefault();
+        $("#internalActivities<?=$i?> tr").slice(currentIndex, currentIndex + 5).show();
+        currentIndex += 5;
+        checkButton<?=$i?>(trsLength,btnMore, btnLess);
+    });
+
+    btnLess.click(function (e) { 
+        e.preventDefault();
+        $("#internalActivities<?=$i?> tr").slice(currentIndex - 5, currentIndex).hide();          
+        currentIndex -= 5;
+        checkButton<?=$i?>(trsLength, btnMore, btnLess);
+    });
+
+  });
+
+  function checkButton<?=$i?>(trsLength, btnMore, btnLess) {
+
+      var currentLength = $("#internalActivities<?=$i?> tr:visible").length;
+      
+      if (currentLength >= trsLength) {
+          btnMore.hide();            
+      } else {
+          btnMore.show();   
+      }
+      
+      if (trsLength > 5 && currentLength > 5) {
+          btnLess.show();
+      } else {
+          btnLess.hide();
+      }
+      
+  }
+</script>
 <input type="hidden" name="nextdate" id="nextdate_<?=$i?>" value="<?=$nextdate?>"> 
 <input type="hidden" name="startdate" id="startdate_<?=$i?>" value="<?=$startdate?>"> 
 <input type="hidden" name="profile_id" id="profile_id_<?=$i?>" value="<?=$profile_id?>"> 
-<table style="width:100%">
+<table style="width:100%" id="internalActivities<?=$i?>">
   <tr>
   <?
   if(date('Y-m-d') != $days[0]){
@@ -110,3 +158,9 @@ $bookedDates = getDoctorAppointmentsdates($profile_id, $startdate, $enddate);
 
  
 </table>
+<div class="form-group">
+  <button id="show_more<?=$i?>" class="tg-btn tg-btn-lg" >Show More</button>
+</div>
+<div class="form-group">
+  <button id="show_less<?=$i?>" class="tg-btn tg-btn-lg" >Show Less</button>
+</div>

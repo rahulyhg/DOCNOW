@@ -17,8 +17,8 @@ if (!empty($_POST)) {
 
 function signin($data) {
 
-    $registrationURL = ROOT_URL . "/LSM.php";
-    $data['Src_URL'] = ($Filename ? ROOT_URL . '/' . $Filename : HOME) . '?From=signin';
+    $registrationURL = ThisURL . ROOT_URL . "/LSM.php";
+    $data['Src_URL'] = ($Filename ? ThisURL . ROOT_URL . '/' . $Filename : HOME) . '?From=signin';
     $data['APIKey'] = 'f0e8212b6bda3ced017c4659bd6ea90b';
     $data['Format'] = 'json';
     $responseJSON = httpPost($registrationURL, $data);

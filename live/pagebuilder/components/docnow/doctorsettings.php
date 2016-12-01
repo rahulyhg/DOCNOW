@@ -260,7 +260,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 			</div>
 			
 			<div class="col-md-3">
-				<a href="settings-doctor.html" class="tg-btn" style="width: 100%;">Notifications</a>
+				<a href="/doctors/notifications.html?Session_ID=<?=$Session_ID?>" class="tg-btn" style="width: 100%;">Notifications</a>
 			</div>
 			
 			<div class="col-md-3">
@@ -348,7 +348,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 						<input type="hidden" id="lat" name="lat" value="<?=$profileDetails['lat']?>" />
 						<input type="hidden" id="lng" name="lng" value="<?=$profileDetails['lng']?>" /> 
 					</div>
-					<div class="form-group">
+					<!--<div class="form-group">
 							<label for="email">Street Address:</label>
 							<input type="text" class="form-control" id="address_1" name="address_1" value="<?=$profileDetails['address_1']?>" >
 						</div>
@@ -367,7 +367,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 						<div class="form-group">
 							<label for="email">Postal/Zip Code:</label>
 							<input type="text" class="form-control" id="postal_code" name="postal_code" value="<?=$profileDetails['postal_code']?>">
-						</div>
+						</div>-->
 						<div class="form-group">
 							<label for="email">Country:</label>
 							<select class="selectpicker" id="country_id" name="country_id">

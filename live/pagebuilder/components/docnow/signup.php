@@ -179,6 +179,7 @@
 				contentType : false,
 				processData : false
 			}).done(function (response) {
+				console.log(response);
 				var responseObj = $.parseJSON(response);
 				if (responseObj.Error_NUM && responseObj.Error_NUM > 0) {
 					flashErrDiv.removeClass('hidden');

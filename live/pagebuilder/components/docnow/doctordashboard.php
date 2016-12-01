@@ -3,6 +3,7 @@
 	/*error_reporting(E_ALL);
 	ini_set('display_errors', 1);*/
 	include_once 'custom_modules/common.php';
+	include_once 'flash_message.php';
 
 	global $Profile_ID;
 	global $Session_ID;
@@ -50,7 +51,8 @@
 		calendarDiv.fullCalendar({
 			minTime: "08:00:00",
             maxTime: "17:00:00",
-            efaultView: 'agendaWeek',
+            allDaySlot:false,
+            defaultView: 'agendaWeek',
 			editable: false,
 			eventLimit: true,
 			eventClick:  function(event, jsEvent, view) {
@@ -116,7 +118,7 @@
 							</div>
 							
 							<div class="col-md-3">
-								<a href="settings-doctor.html" class="tg-btn" style="width: 100%;">Notifications</a>
+								<a href="/doctors/notifications.html?Session_ID=<?=$Session_ID?>" class="tg-btn" style="width: 100%;">Notifications</a>
 							</div>
 							
 							<div class="col-md-3">

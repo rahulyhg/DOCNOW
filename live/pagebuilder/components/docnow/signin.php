@@ -244,6 +244,7 @@
 			signinForm = $('#signin-form'),
 			flashErrDiv = $('.sign-in-error-div'),
 			flashErrSpan = $('.sign-in-error-span'),
+			sessionWriteScript = $('.session-write-script').html(),
 			dashboardUrl = $('.dashboard-url').html();
 
 		signinForm.on('submit',function (e) {
@@ -266,7 +267,17 @@
 					flashErrDiv.removeClass('hidden');
 					flashErrSpan.html(responseObj.Error_STRING);
 				} else if(responseObj.url != '') {
-					window.location.href = responseObj.url;
+					$.ajax({
+						type: 'post',
+						url: sessionWriteScript,
+						data: {
+							sessionMessage: "You have been logged in successfully.",
+					 		sessionMessageClass: "alert-success"
+					 	}
+					}).done(function (response) {
+						window.location.href = responseObj.url;
+					});
+					
 				} else {
 					flashErrDiv.removeClass('hidden');
 					flashErrSpan.html('An error occured. Please try again');

@@ -7,7 +7,9 @@ function date_compare($a, $b){
     $t2 = strtotime($b['orderDate']);
     return $t2 - $t1;
 }    
-$Category_ID = 23;
+$Category_ID = 23;	//Web/Content/blog
+//$Category_ID = 7;		//Web/Content/News
+
 $CatalogItems = RetrieveCatalogItems ($Category_ID, CATALOG_CONTENT, STATUS_VISIBLE, None, None, ORDER_BY_DATE, ORDER_ASC, None, None);
 
 while ($CatalogItem = ReadFromDB ($CatalogItems)) {
