@@ -207,7 +207,7 @@ $(window).scroll(function () {
 
 				$profileDetails = getProflieRegDetails($profile_id);
 
-        $profileDetails['profilepic'] = ($profileDetails['profilepic'] ? $profileDetails['profilepic'] : '/profilepics/dr default picture.jpg');
+        $profileDetails['profilepic'] = ($profileDetails['profilepic'] ? IMAGE_URL.$profileDetails['profilepic'] : '/live/images/Doctors_default.jpg');
 
         $doctorName = str_replace('Dr', '', $profileDetails['first_name'].' '.$profileDetails['last_name']);
 
@@ -218,7 +218,7 @@ $(window).scroll(function () {
           
 						<div class="tg-box">
 						<?php if($profileDetails['profilepic']){?>
-							<figure class="tg-docprofile-img"><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$profile_id . $sessionParams?>"><img src="<?=IMAGE_URL.$profileDetails['profilepic']?>" alt="<?php echo $profileDetails['first_name'].' '.$profileDetails['last_name']; ?>"></a></figure>
+							<figure class="tg-docprofile-img"><a href="/doctor/doctor-details.html?doctor_profile_id=<?=$profile_id . $sessionParams?>"><img src="<?=$profileDetails['profilepic']?>" alt="<?php echo $profileDetails['first_name'].' '.$profileDetails['last_name']; ?>"></a></figure>
 						<?}?>
 								<span class="tg-featuredicon"><em class="fa fa-bolt"></em></span>
 							<div class="tg-docprofile-content">
@@ -663,7 +663,7 @@ $(document).ready(function() {
                       </a>
                     <?php else: ?>
                       <a href="/doctor/doctor-details.html?doctor_profile_id=<?=$featuredocProfileId . $sessionParams?>">
-                        <img src="/live/images/blog/img-12.jpg" alt="image description">
+                        <img src="/live/images/Doctors_default-thumbs-63x63.jpg" alt="image description">
                       </a>
                     <?php endif; ?>
                     </figure>

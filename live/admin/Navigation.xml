@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+<!-- Use this file to customize the Ensight left menu bar -->
+
+<programs>
+	<program>
+		<name>Admin Panel</name>
+		<item>
+			<name>Doctor Admin</name>
+			<icon>images/nav/doctor-man-icon.png</icon>
+			<link>/live/admin/doctor-admin.php?Session_ID={session}</link>
+			<title>Doctor Admin</title>
+		</item>
+	</program>
+</programs>

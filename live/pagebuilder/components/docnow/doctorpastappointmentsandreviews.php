@@ -141,7 +141,7 @@ $(document).ready(function() {
 							</a>
 						<?php else: ?>
 							
-								<img src="/live/images/patient-icon.png" alt="image description">
+								<img src="/live/images/Patient_default.jpg" alt="image description">
 							
 						<?php endif; ?>
 						</figure>
